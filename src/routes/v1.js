@@ -20,7 +20,7 @@ router.get('/:model/:id', handleGetOne);
 router.post('/:model', handleCreate);
 router.put('/:model/:id', handleUpdate);
 router.delete('/:model/:id', handleDelete);
-router.post('/:model/:id/addbook', handleAddBookToLibrary)
+router.post('/:model/:id/addbook', handleAddBookToLibrary);
 
 async function handleAddBookToLibrary(req, res) {
   const id = req.params.id;
