@@ -31,11 +31,9 @@ Book.belongsTo(User);
 Book.belongsTo(Library);
 Library.hasMany(Book);
 
-
 module.exports = { 
   sequelizeDB,
   users: User,
   books: new ModelInterface(Book),
   libraries: new LibraryInterface(Library),
-
 };

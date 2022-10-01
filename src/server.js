@@ -12,6 +12,8 @@ const errorHandler = require('./middleware/error-handlers/500');
 const authRouter = require('./auth/routes');
 const v1Router = require('./routes/v1');
 const v2Router = require('./routes/v2');
+const libraryRouter = require('./routes/libraries');
+const bookRouter = require('./routes/books');
 
 const app = express();
 
@@ -25,7 +27,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/auth/', authRouter);
 app.use('/api/v1', v1Router);
-app.use('/api/v2', v2Router);
+app.use('/api/', v1Router);
+app.use('/api/libraries', libraryRouter);
+app.use('/api/books', bookRouter);
+
 
 app.get('/', (req, res) => {
   res.status(200).send('Welcome to the server!');
