@@ -2,7 +2,8 @@
 
 require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
-const ModelInterface = require('./model-interface');
+// const ModelInterface = require('./model-interface');
+const BookInterface = require('./books/books-interface');
 const LibraryInterface = require('./libraries/library-interface');
 
 const DATABASE_URL = process.env.DATABASE_URL || 'sqlite:memory';
@@ -34,6 +35,6 @@ Library.hasMany(Book);
 module.exports = { 
   sequelizeDB,
   users: User,
-  books: new ModelInterface(Book),
+  books: new BookInterface(Book),
   libraries: new LibraryInterface(Library),
 };

@@ -16,7 +16,13 @@ module.exports = class LibraryInterface extends ModelInterface {
       return err;
     }
   }
-
+  
+  /**
+   * Adds a book that already exists in the Books table to the library specified by the libraryid.
+   * @param {*} libraryid Primary key of a library model.
+   * @param {Book} book An instance of the Book model.
+   * @returns The book that was added.
+   */
   async addExistingBook(libraryid, book) {
     try {
       const library = await this.model.findByPk(libraryid);

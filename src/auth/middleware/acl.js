@@ -7,7 +7,7 @@ module.exports = (capability) => {
         next();
       }
       else {
-        next('Access Denied');
+        res.status(403).send('Not enough permission to perform this action.');
       }
     } catch (e) {
       next('Invalid Login');

@@ -10,10 +10,11 @@ const errorHandler = require('./middleware/error-handlers/500');
 
 // Routers
 const authRouter = require('./auth/routes');
-const v1Router = require('./routes/v1');
-const v2Router = require('./routes/v2');
+// const v1Router = require('./routes/v1');
+// const v2Router = require('./routes/v2');
 const libraryRouter = require('./routes/libraries');
 const bookRouter = require('./routes/books');
+const profileRouter = require('./routes/profiles');
 
 const app = express();
 
@@ -25,11 +26,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/auth/', authRouter);
-app.use('/api/v1', v1Router);
-app.use('/api/', v1Router);
+app.use('/auth', authRouter);
+// app.use('/api/v1', v1Router);
 app.use('/api/libraries', libraryRouter);
 app.use('/api/books', bookRouter);
+app.use('/api/profile', profileRouter);
+// app.use('/api', v1Router);
+
 
 
 app.get('/', (req, res) => {

@@ -9,11 +9,11 @@ const userModel = (sequelize, DataTypes) => {
   const model = sequelize.define('Users', {
     username: { type: DataTypes.STRING, required: true, unique: true },
     password: { type: DataTypes.STRING, required: true },
-    role: { type: DataTypes.ENUM('user', 'writer', 'editor', 'admin'), required: true, defaultValue: 'user'},
+    role: { type: DataTypes.ENUM('reader', 'writer', 'librarian', 'architect', 'admin'), required: true, defaultValue: 'reader'},
     token: {
       type: DataTypes.VIRTUAL,
       get() {
-        return jwt.sign({ username: this.username }, SECRET);
+        return jwt.sign({ username: this.username, id: this.id }, SECRET);
       },
       set(tokenObj) {
         let token = jwt.sign(tokenObj, SECRET);
@@ -24,10 +24,21 @@ const userModel = (sequelize, DataTypes) => {
       type: DataTypes.VIRTUAL,
       get() {
         const acl = {
-          user: ['read'],
-          writer: ['read', 'create'],
-          editor: ['read', 'create', 'update'],
-          admin: ['read', 'create', 'update', 'delete'],
+          reader: ['checkout'],
+          writer: ['checkout', 'addToCatalog'],
+          librarian: ['checkout', 'addToLibrary', 'checkBookStatus'],
+          architect: ['checkout', 'buildLibrary', 'destroyLibrary'],
+          admin: ['checkout',
+            'addToCatalog',
+            'checkBookStatus',
+            'updateBook',
+            'buildLibrary',
+            'updateLibrary',
+            'destroyLibrary', 
+            'update', 
+            'destroyBook',
+            'superuser',
+          ],
         };
         return acl[this.role];
       },
@@ -54,6 +65,54 @@ const userModel = (sequelize, DataTypes) => {
       throw new Error('User Not Found');
     } catch (e) {
       throw new Error(e.message);
+    }
+  };
+
+  /**
+   * 
+   * @param {*} Instance of a Book model. 
+   */
+  model.prototype.checkoutBook = async function(book) {
+    try {
+      if (!book.UserId) {
+        await this.addBook(book);
+        const userBooks = await this.getBooks();
+        return {
+          books: userBooks,
+          message: 'Successfully checked out book.',
+        };
+      } else {
+        throw new Error('Book already checked out.');
+      }
+    } catch (err) {
+      console.error(err);
+      const userBooks = await this.getBooks;
+      return {
+        books: userBooks,
+        message: err.message,
+      };
+    }
+  };
+
+  model.prototype.returnBook = async function(book) {
+    try {
+      if (book.UserId) {
+        await this.removeBook(book);
+        const userBooks = await this.getBooks();
+        return {
+          books: userBooks,
+          message: 'Successfully returned book.',
+        };
+      } else {
+        throw new Error('Cannot return book because it does not belong to current user.');
+      }
+    } catch (err) {
+      console.error(err);
+      const userBooks = await this.getBooks();
+      return {
+        books: userBooks,
+        message: err.message,
+      };
     }
   };
 
