@@ -31,6 +31,7 @@ const userModel = (sequelize, DataTypes) => {
           admin: ['checkout',
             'addToCatalog',
             'checkBookStatus',
+            'addToLibrary',
             'updateBook',
             'buildLibrary',
             'updateLibrary',

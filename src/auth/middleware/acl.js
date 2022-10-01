@@ -3,7 +3,7 @@
 module.exports = (capability) => {
   return (req, res, next) => {
     try {
-      if (req.user.capabilities.includes(capability)) {
+      if (req.user.capabilities.includes(capability) || req.user.capabilities.includes('superuser')) {
         next();
       }
       else {

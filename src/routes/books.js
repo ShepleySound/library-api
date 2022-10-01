@@ -8,15 +8,15 @@ const permissions = require('../auth/middleware/acl.js');
 const router = express.Router();
 
 router.get('/', bearerAuth, handleGetAll);
-router.get('/:id', bearerAuth, handleGetOne);
 router.get('/all/:userId', bearerAuth, permissions('checkBookStatus'), getBooksByUser);
 router.get('/checked', bearerAuth, permissions('checkBookStatus'), getCheckedBooks);
 router.get('/available', bearerAuth, getAvailableBooks);
+router.get('/:id', bearerAuth, handleGetOne);
 router.post('/', bearerAuth, permissions('addToCatalog'), handleCreate);
-router.put('/', bearerAuth, permissions('updateBook'), handleUpdate);
-router.patch('/', bearerAuth, permissions('updateBook'), handleUpdate);
+router.put('/:id', bearerAuth, permissions('updateBook'), handleUpdate);
+router.patch('/:id', bearerAuth, permissions('updateBook'), handleUpdate);
 router.patch('/:bookid/:libraryid', bearerAuth, permissions('addToLibrary'), handleAddExistingBookToLibrary);
-router.delete('/', bearerAuth, permissions('destroyBook'), handleDelete);
+router.delete('/:id', bearerAuth, permissions('destroyBook'), handleDelete);
 
 async function handleGetAll(req, res) {
   let records = await books.get();
@@ -39,15 +39,15 @@ async function getBooksByUser(req, res) {
 // Gets any book that is checked from library
 async function getCheckedBooks(req, res) {
   const id = req.params.id;
-  let books = await books.getCheckedBooks(id);
-  res.status(200).json(books);
+  let checkedBooks = await books.getCheckedBooks(id);
+  res.status(200).json(checkedBooks);
 }
 
 // get any book currently available for checkout
 async function getAvailableBooks(req, res) {
   const id = req.params.id;
-  let books = await books.getAvailableBooks(id);
-  res.status(200).json(books);
+  let availableBooks = await books.getAvailableBooks(id);
+  res.status(200).json(availableBooks);
 }
 
 // Creates a book with no library association

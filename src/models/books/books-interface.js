@@ -1,5 +1,6 @@
 'use strict';
 
+const { Op } = require('sequelize');
 const ModelInterface = require('../model-interface');
 
 module.exports = class BookInterface extends ModelInterface {
@@ -36,13 +37,15 @@ module.exports = class BookInterface extends ModelInterface {
 
   async getCheckedBooks(){
     try {
-      const books = await this.model.findAll({ where: {
-        UserId: !null,
+      return await this.model.findAll({ where: {
+        UserId: {
+          [Op.not]: null, 
+        },
       }});
     
-      return await books.findAll({
-        attributes: ['id', 'title', 'author', 'pages', 'LibraryId'],
-      });
+      // return await books.findAll({
+      //   attributes: ['id', 'title', 'author', 'pages', 'LibraryId'],
+      // });
     } catch (err) {
       console.error(err.message);
       return err;
@@ -52,13 +55,13 @@ module.exports = class BookInterface extends ModelInterface {
 
   async getAvailableBooks(){
     try {
-      const books = await this.model.findAll({ where: {
+      return await this.model.findAll({ where: {
         UserId: null,
       }});
     
-      return await books.findAll({
-        attributes: ['id', 'title', 'author', 'pages', 'LibraryId'],
-      });
+      // return await books.findAll({
+      //   attributes: ['id', 'title', 'author', 'pages', 'LibraryId'],
+      // });
     } catch (err) {
       console.error(err.message);
       return err;
