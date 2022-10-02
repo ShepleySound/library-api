@@ -14,6 +14,12 @@ module.exports = (sequelizeDB, DataTypes) => {
     pages: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      validate: {
+        min: {
+          args: [0],
+          msg: 'Pages must be greater than 0',
+        },
+      },
     },
   });
 };

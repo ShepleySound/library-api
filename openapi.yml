@@ -5,6 +5,7 @@ info:
 servers:
   - url: http://localhost:3000
 paths:
+  ##### Auth paths #####
   /auth/signup:
     post:
       requestBody:
@@ -18,6 +19,8 @@ paths:
           description: OK
         "401":
           $ref: "#/components/responses/UnauthenticatedError"
+      tags:
+        - Auth
   /auth/signin:
     post:
       security:
@@ -27,8 +30,12 @@ paths:
           description: OK
         "401":
           $ref: "#/components/responses/UnauthenticatedError"
+      tags:
+        - Auth
+  ##### Book paths #####
   /api/books:
     get:
+      summary: Get a list of all existing books
       security:
         - bearerAuth: []
       responses:
@@ -36,7 +43,16 @@ paths:
           description: OK
         "403":
           $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
     post:
+      summary: Create a book and add it to the catalog
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/Book"
       security:
         - bearerAuth: []
       responses:
@@ -44,8 +60,35 @@ paths:
           description: OK
         "403":
           $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+  /api/books/checked:
+    get:
+      summary: Get all books currently checked out by a user.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+  /api/books/available:
+    get:
+      summary: Get all books not checked out by a user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
   /api/books/{id}:
     get:
+      summary: Get a book by its ID
       parameters:
         - in: path
           name: id
@@ -61,7 +104,10 @@ paths:
           description: OK
         "403":
           $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
     put:
+      summary: Update a book
       parameters:
         - in: path
           name: id
@@ -77,7 +123,10 @@ paths:
           description: OK
         "403":
           $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
     patch:
+      summary: Update a book
       parameters:
         - in: path
           name: id
@@ -93,7 +142,10 @@ paths:
           description: OK
         "403":
           $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
     delete:
+      summary: Delete a book
       parameters:
         - in: path
           name: id
@@ -109,6 +161,35 @@ paths:
           description: OK
         "403":
           $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+  /api/books/{bookid}/{libraryid}:
+    patch:
+      summary: Assign an existing book to an existing library using their respective ID's
+      parameters:
+        - in: path
+          name: bookid
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The book ID
+        - in: path
+          name: libraryid
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The libary ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
 components:
   responses:
     UnauthenticatedError:
