@@ -149,14 +149,14 @@ describe('Test /books endpoint methods with valid authentication', () => {
 
   test('Handle getting all books', async () => {
     const response = await request
-      .get('/api/v2/books')
+      .get('/api/books')
       .set('Authorization', 'bearer ' + token);
     expect(response.status).toEqual(200);
   });
 
   test('Create a book', async () => {
     let response = await request
-      .post('/api/v2/books')
+      .post('/api/books')
       .set('Authorization', 'bearer ' + token)
       .send({
         title: 'Test Book',
@@ -171,7 +171,7 @@ describe('Test /books endpoint methods with valid authentication', () => {
 
   test('Get a book by id', async () => {
     const response = await request
-      .get('/api/v2/books/1')
+      .get('/api/books/1')
       .set('Authorization', 'bearer ' + token);
     expect(response.status).toEqual(200);
     expect(response.body.title).toEqual('Test Book');
@@ -181,7 +181,7 @@ describe('Test /books endpoint methods with valid authentication', () => {
 
   test('Update a book', async () => {
     let response = await request
-      .put('/api/v2/books/1')
+      .put('/api/books/1')
       .set('Authorization', 'bearer ' + token)
       .send({
         title: 'Updated Test Book',
@@ -194,23 +194,23 @@ describe('Test /books endpoint methods with valid authentication', () => {
 
   test('Delete a book', async () => {
     let response = await request
-      .delete('/api/v2/books/1')
+      .delete('/api/books/1')
       .set('Authorization', 'bearer ' + token);
     expect(response.status).toEqual(200);
-    expect(response.body.title).toBeUndefined();
+    expect(response.body?.title).toBeUndefined();
   });
 });
 
 describe('Test /books endpoint methods with invalid authentication', () => {
   test('Handle getting all books', async () => {
     const response = await request
-      .get('/api/v2/books');
+      .get('/api/books');
     expect(response.status).toEqual(401);
   });
 
   test('Create a book', async () => {
     let response = await request
-      .post('/api/v2/books')
+      .post('/api/books')
       .send({
         title: 'Test Book',
         author: 'Test Author',
@@ -221,13 +221,13 @@ describe('Test /books endpoint methods with invalid authentication', () => {
 
   test('Get a book by id', async () => {
     const response = await request
-      .get('/api/v2/books/1');
+      .get('/api/books/1');
     expect(response.status).toEqual(401);
   });
 
   test('Update a book', async () => {
     let response = await request
-      .put('/api/v2/books/1')
+      .put('/api/books/1')
       .send({
         title: 'Updated Test Book',
       });
@@ -236,7 +236,7 @@ describe('Test /books endpoint methods with invalid authentication', () => {
 
   test('Delete a book', async () => {
     let response = await request
-      .delete('/api/v2/books/1');
+      .delete('/api/books/1');
     expect(response.status).toEqual(401);
   });
 });
