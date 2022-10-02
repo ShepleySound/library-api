@@ -11,7 +11,6 @@ router.get('/', bearerAuth, handleGetAll);
 router.get('/:id', bearerAuth, handleGetOne);
 router.get('/:id/books', bearerAuth, getBooksInLibrary);
 router.post('/', bearerAuth, permissions('buildLibrary'), handleCreate);
-// router.post('/:id/addbook', bearerAuth, permissions('addToLibrary'), handleAddNewBookToLibrary);
 router.put('/:id', bearerAuth, permissions('updateLibrary'), handleUpdate);
 router.patch('/:id', bearerAuth, permissions('updateLibrary'), handleUpdate);
 router.delete('/:id', bearerAuth, permissions('destroyLibrary'), handleDelete);

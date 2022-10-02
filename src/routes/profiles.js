@@ -24,6 +24,20 @@ router.get('/', bearerAuth, async (req, res) => {
   }
 });
 
+router.get('/all', bearerAuth, permissions('superuser'), async (req, res) => {
+  try {
+    const allUsers = await users.findAll({
+      attributes: {
+        exclude: ['password', 'token', 'capabilities'],
+      },
+    });
+    res.status(200).json(allUsers);
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+});
+
 router.patch('/checkout/:bookid', bearerAuth, async (req, res) => {
   try {
     const decoded = jwt.decode(req.token);
