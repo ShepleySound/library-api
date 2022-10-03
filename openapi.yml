@@ -5,7 +5,7 @@ info:
 servers:
   - url: http://localhost:3000
 paths:
-  ##### Auth paths #####
+  ##### Auth Paths #####
   /auth/signup:
     post:
       requestBody:
@@ -32,7 +32,7 @@ paths:
           $ref: "#/components/responses/UnauthenticatedError"
       tags:
         - Auth
-  ##### Book paths #####
+  ##### Book Paths #####
   /api/books:
     get:
       summary: Get a list of all existing books
@@ -190,6 +190,116 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
       tags:
         - Books
+
+  ##### Library Paths #####
+
+  /api/libraries:
+    get:
+      summary: Get a list of all existing librarys
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+    post:
+      summary: Create a library
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/Library"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+
+  /api/libraries/{id}:
+    get:
+      summary: Get a library by its ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The library ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+    put:
+      summary: Update a library
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The library ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+    patch:
+      summary: Update a library
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The book ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+    delete:
+      summary: Delete a library
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The book ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
 components:
   responses:
     UnauthenticatedError:
@@ -231,3 +341,9 @@ components:
           type: string
         pages:
           type: integer
+    Library:
+      properties:
+        name:
+          type: string
+        location:
+          type: string
