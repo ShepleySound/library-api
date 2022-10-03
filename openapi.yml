@@ -1,0 +1,349 @@
+openapi: "3.0.2"
+info:
+  title: Library API
+  version: "1.0"
+servers:
+  - url: http://localhost:3000
+paths:
+  ##### Auth Paths #####
+  /auth/signup:
+    post:
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: OK
+        "401":
+          $ref: "#/components/responses/UnauthenticatedError"
+      tags:
+        - Auth
+  /auth/signin:
+    post:
+      security:
+        - BasicAuth: []
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/UnauthenticatedError"
+      tags:
+        - Auth
+  ##### Book Paths #####
+  /api/books:
+    get:
+      summary: Get a list of all existing books
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+    post:
+      summary: Create a book and add it to the catalog
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/Book"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+  /api/books/checked:
+    get:
+      summary: Get all books currently checked out by a user.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+  /api/books/available:
+    get:
+      summary: Get all books not checked out by a user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+  /api/books/{id}:
+    get:
+      summary: Get a book by its ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The book ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+    put:
+      summary: Update a book
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The book ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+    patch:
+      summary: Update a book
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The book ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+    delete:
+      summary: Delete a book
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The book ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+  /api/books/{bookid}/{libraryid}:
+    patch:
+      summary: Assign an existing book to an existing library using their respective ID's
+      parameters:
+        - in: path
+          name: bookid
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The book ID
+        - in: path
+          name: libraryid
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The libary ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Books
+
+  ##### Library Paths #####
+
+  /api/libraries:
+    get:
+      summary: Get a list of all existing librarys
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+    post:
+      summary: Create a library
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/Library"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+
+  /api/libraries/{id}:
+    get:
+      summary: Get a library by its ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The library ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+    put:
+      summary: Update a library
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The library ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+    patch:
+      summary: Update a library
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The book ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+    delete:
+      summary: Delete a library
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The book ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+      tags:
+        - Libraries
+components:
+  responses:
+    UnauthenticatedError:
+      description: Authentication information is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+    UnauthorizedError:
+      description: User is valid, but is unauthorized to perform this task.
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum: [reader, writer, librarian, architect, admin]
+    Book:
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        pages:
+          type: integer
+    Library:
+      properties:
+        name:
+          type: string
+        location:
+          type: string
