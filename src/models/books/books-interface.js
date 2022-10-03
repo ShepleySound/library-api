@@ -8,19 +8,6 @@ module.exports = class BookInterface extends ModelInterface {
     super(model);
   }
 
-  // async getAllBooks(id){
-  //   try {
-  //     //  const books = await this.model.findByPk(id);
-  //     // return await this.model.findAll({
-  //     //   attributes: ['id', 'title', 'author', 'pages'],
-  //     // });
-  //     return await this.model.findAll()
-  //   } catch (err) {
-  //     console.error(err.message);
-  //     return err;
-  //   }
-  // }
-
   async getBooksByUser(userId){
     try {
       const user = await this.model.findAll( { where: {

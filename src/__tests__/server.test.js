@@ -95,7 +95,7 @@ describe('Test admin authentication', () => {
 });
 
 describe('Test user authentication', () => {
-  const testUsername = 'testUser';
+  const testUsername = 'testReader';
   const testPassword = 'thisisapassworditprobablyisnotverygood';
   const testRole = 'reader';
 
@@ -118,11 +118,11 @@ describe('Test user authentication', () => {
   test('Valid user signin', async () => {
     const encodedAuth = Buffer.from(`${testUsername}:${testPassword}`).toString('base64');
     
-    const signInResponse = await request
+    const signinResponse = await request
       .post('/auth/signin')
       .set('Authorization', 'basic ' + encodedAuth);
 
-    const { username, role, capabilities, token } = signInResponse.body;
+    const { username, role, capabilities, token } = signinResponse.body;
 
     expect(username).toEqual(testUsername);
     expect(role).toEqual(testRole);
@@ -132,7 +132,7 @@ describe('Test user authentication', () => {
   });
 });
 
-describe('Test /books endpoint methods with valid authentication', () => {
+describe('Test basic /books CRUD methods with valid authentication', () => {
   const testUsername = 'testAdmin';
   const testPassword = 'adminpasswordSuperSecret!';
   
@@ -179,9 +179,22 @@ describe('Test /books endpoint methods with valid authentication', () => {
     expect(response.body.pages).toEqual(100);
   });
 
-  test('Update a book', async () => {
+  test('Update a book using PUT', async () => {
     let response = await request
       .put('/api/books/1')
+      .set('Authorization', 'bearer ' + token)
+      .send({
+        title: 'Updated Test Book',
+      });
+    expect(response.status).toEqual(200);
+    expect(response.body.title).toEqual('Updated Test Book');
+    expect(response.body.author).toEqual('Test Author');
+    expect(response.body.pages).toEqual(100);
+  });
+
+  test('Update a book using PATCH', async () => {
+    let response = await request
+      .patch('/api/books/1')
       .set('Authorization', 'bearer ' + token)
       .send({
         title: 'Updated Test Book',
@@ -199,9 +212,10 @@ describe('Test /books endpoint methods with valid authentication', () => {
     expect(response.status).toEqual(200);
     expect(response.body?.title).toBeUndefined();
   });
+
 });
 
-describe('Test /books endpoint methods with invalid authentication', () => {
+describe('Test basic /books CRUD methods with invalid authentication', () => {
   test('Handle getting all books', async () => {
     const response = await request
       .get('/api/books');
@@ -238,5 +252,145 @@ describe('Test /books endpoint methods with invalid authentication', () => {
     let response = await request
       .delete('/api/books/1');
     expect(response.status).toEqual(401);
+  });
+});
+
+describe('Test role-based access flow', () => {
+
+  const testAdmin = 'testAdmin';
+  const testAdminPassword = 'adminpasswordSuperSecret!';
+  const testLibrarian = 'testLibrarian';
+  const testLibrarianPassword = 'thisisapassworditisalright';
+  const testReader = 'testReader';
+  const testReaderPassword = 'thisisapassworditprobablyisnotverygood';
+
+  let adminToken = '';
+  let librarianToken = '';
+  let readerToken = '';
+  beforeAll(async () => {
+    
+    await request.post('/auth/signup').send({
+      username: testLibrarian,
+      password: testLibrarianPassword,
+      role: 'librarian',
+    });  
+
+    const adminEncodedAuth = Buffer.from(`${testAdmin}:${testAdminPassword}`).toString('base64');
+
+    const adminSigninResponse = await request
+      .post('/auth/signin')
+      .set('Authorization', 'basic ' + adminEncodedAuth);
+
+    adminToken = adminSigninResponse.body.token;
+
+    const librarianEncodedAuth = Buffer.from(`${testLibrarian}:${testLibrarianPassword}`).toString('base64');
+
+    const librarianSigninResponse = await request
+      .post('/auth/signin')
+      .set('Authorization', 'basic ' + librarianEncodedAuth);
+
+    librarianToken = librarianSigninResponse.body.token;
+    
+    const readerEncodedAuth = Buffer.from(`${testReader}:${testReaderPassword}`).toString('base64');
+    
+    const readerSigninResponse = await request
+      .post('/auth/signin')
+      .set('Authorization', 'basic ' + readerEncodedAuth);
+    
+    readerToken = readerSigninResponse.body.token;
+  });
+
+  test('All tokens should have values', () => {
+    expect(adminToken).toBeTruthy();
+    expect(librarianToken).toBeTruthy();
+    expect(readerToken).toBeTruthy();
+  });
+
+  test('Create a book', async () => {
+    const response = await request
+      .post('/api/books')
+      .set('Authorization', 'bearer ' + adminToken)
+      .send({
+        title: 'Test Book',
+        author: 'Test Author',
+        pages: 100,
+      });
+    expect(response.status).toEqual(201);
+  });
+
+  test('Admins can add books to the full catalog', async () => {
+    const books = [
+      {
+        title: 'Test Book1',
+        author: 'Test Author1',
+        pages: 100,
+      },
+      {
+        title: 'Test Book2',
+        author: 'Test Author2',
+        pages: 200,
+      },
+      {
+        title: 'Test Book3',
+        author: 'Test Author3',
+        pages: 300,
+      },
+      {
+        title: 'Test Book4',
+        author: 'Test Author4',
+        pages: 400,
+      },
+      {
+        title: 'Test Book5',
+        author: 'Test Author5',
+        pages: 500,
+      },
+    ];
+    for (const book of books) {
+      let response = await request
+        .post('/api/books')
+        .set('Authorization', 'bearer ' + adminToken)
+        .send(book);
+      expect(response.status).toEqual(201);
+      expect(response.body.title).toEqual(book.title);
+      expect(response.body.author).toEqual(book.author);
+      expect(response.body.pages).toEqual(book.pages);
+    }
+  });
+
+  test('Get a book by id', async () => {
+    // Use book id '2' since we added and deleted a book earlier
+    const response = await request
+      .get('/api/books/2')
+      .set('Authorization', 'bearer ' + adminToken);
+    expect(response.status).toEqual(200);
+    expect(response.body.title).toEqual('Test Book');
+    expect(response.body.author).toEqual('Test Author');
+    expect(response.body.pages).toEqual(100);
+  });
+
+  test('Admins can add libraries', async () => {
+    let response = await request
+      .post('/api/libraries')
+      .set('Authorization', 'bearer ' + adminToken)
+      .send({
+        name: 'Test Library',
+        location: 'Test location',
+      });
+    expect(response.status).toEqual(201);
+  });
+
+  test('Librarians can add books from the catalog to a library', async () => {
+    const response = await request
+      .patch('/api/books/2/1')
+      .set('Authorization', 'bearer ' + librarianToken);
+    expect(response.status).toEqual(200);
+    const getResponse = await request
+      .get('/api/books/2')
+      .set('Authorization', 'bearer ' + librarianToken);
+    expect(getResponse.status).toEqual(200);
+    expect(getResponse.body.title).toEqual('Test Book');
+    expect(getResponse.body.libraryId).toEqual(1);
+
   });
 });
