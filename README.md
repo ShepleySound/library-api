@@ -4,9 +4,11 @@ An Express API server that includes functionality you would find at your local l
 
 Author: Robert Shepley, Tyler Main
 <!-- Replace URL's and add more necessary links -->
-- [Tests Report](https://github.com/ShepleySound/full-auth-api/actions)
-- [Assignment Pull Request](https://github.com/ShepleySound/full-auth-api/pull/1)
-- [Heroku Prod Deployment](https://shepley-full-auth-api.herokuapp.com/)
+- [Tests Report](https://github.com/ShepleySound/library-api/actions)
+- [Assignment Pull Request](https://github.com/ShepleySound/library-api/pull/1)
+- [Heroku Prod Deployment](https://shepley-main-library-api.herokuapp.com/)
+- [OpenAPI Docs hosted on SwaggerHub](https://app.swaggerhub.com/apis-docs/SHEPLEYSOUND_1/library-api/1.0)
+
 
 ## Setup
 
